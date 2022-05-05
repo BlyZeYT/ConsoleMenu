@@ -1,6 +1,6 @@
 # ConsoleMenu
 ## For .NET 6.0
-Easy to use and highly customiyable Console Menu
+Easy to use and highly customizable Console Menu
 
 ### Documentation
 
