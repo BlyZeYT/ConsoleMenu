@@ -1,13 +1,106 @@
-﻿namespace ConsoleMenu
+namespace ConsoleMenu
 {
     using Colorful;
     using Console = Colorful.Console;
     using System.Drawing;
 
     /// <summary>
-    /// Initializes a simple Console Menu
+    /// Initializes a Console Menu without a title
     /// </summary>
-    public struct ConsoleMenu
+    public struct ConsoleMenuSimple : IDisposable
+    {
+        private Color menuColor;
+        /// <summary>
+        /// Returns the Menu Color
+        /// </summary>
+        public Color MenuColor { get { return menuColor; } }
+        private string menuSymbol;
+        /// <summary>
+        /// Returns the Menu Symbol
+        /// </summary>
+        public string MenuSymbol { get { return menuSymbol; } }
+
+        /// <summary>
+        /// Initializes a Console Menu without a title
+        /// </summary>
+        /// <param name="menuColor">The color of the menu</param>
+        /// <param name="menuSymbol">The symbol of the menu</param>
+        public ConsoleMenuSimple(Color menuColor, string menuSymbol = ">")
+        {
+            this.menuColor = menuColor;
+            this.menuSymbol = menuSymbol;
+        }
+
+        /// <summary>
+        /// Runs the Menu with the given Menu Options
+        /// </summary>
+        /// <param name="options">The options to run the menu with</param>
+        /// <param name="chosenOption">The chosen option</param>
+        public void Run(MenuOption[] options, out MenuOption chosenOption)
+        {
+            var index = 0;
+
+            Draw(menuColor, menuSymbol, options, options[index]);
+
+            ConsoleKey key;
+            do
+            {
+                key = Console.ReadKey(true).Key;
+                switch (key)
+                {
+                    case ConsoleKey.DownArrow:
+                        if (index < options.Length - 1)
+                        {
+                            index++;
+                            Draw(menuColor, menuSymbol, options, options[index]);
+                        }
+                        break;
+                    case ConsoleKey.UpArrow:
+                        if (index > 0)
+                        {
+                            index--;
+                            Draw(menuColor, menuSymbol, options, options[index]);
+                        }
+                        break;
+                }
+            } while (key != ConsoleKey.Enter);
+            Console.Clear();
+            chosenOption = options[index];
+            options[index].Action.Invoke();
+        }
+
+        private static void Draw(Color menuColor, string menuSymbol, MenuOption[] options, MenuOption selected)
+        {
+            Console.Clear();
+
+            Console.WriteLine();
+
+            foreach (var option in options)
+            {
+                if (option == selected)
+                {
+                    Console.Write(menuSymbol + " ", menuColor);
+                }
+                else
+                {
+                    Console.Write("  ", menuColor);
+                }
+
+                Console.WriteLine(option.Name, option.Color);
+            }
+        }
+
+        public void Dispose()
+        {
+            GC.Collect();
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    /// <summary>
+    /// Initializes a Console Menu with a title
+    /// </summary>
+    public struct ConsoleMenu : IDisposable
     {
         private Color menuColor;
         /// <summary>
@@ -26,17 +119,17 @@
         public Color TitleColor { get { return titleColor; } }
         private string menuSymbol;
         /// <summary>
-        /// Return the Menu Symbol
+        /// Returns the Menu Symbol
         /// </summary>
         public string MenuSymbol { get { return menuSymbol; } }
 
         /// <summary>
-        /// Initializes a simple Console Menu
+        /// Initializes a Console Menu with a title
         /// </summary>
-        /// <param name="menuColor"></param>
-        /// <param name="title"></param>
-        /// <param name="titleColor"></param>
-        /// <param name="menuSymbol"></param>
+        /// <param name="menuColor">The color of the menu</param>
+        /// <param name="title">The title of the menu</param>
+        /// <param name="titleColor">The color of the title menu</param>
+        /// <param name="menuSymbol">The symbol of the menu</param>
         public ConsoleMenu(Color menuColor, string title, Color titleColor, string menuSymbol = ">")
         {
             this.menuColor = menuColor;
@@ -48,8 +141,9 @@
         /// <summary>
         /// Runs the Menu with the given Menu Options
         /// </summary>
-        /// <param name="options"></param>
-        public void Run(MenuOption[] options)
+        /// <param name="options">The options to run the menu with</param>
+        /// <param name="chosenOption">The chosen option</param>
+        public void Run(MenuOption[] options, out MenuOption chosenOption)
         {
             var index = 0;
 
@@ -78,6 +172,7 @@
                 }
             } while (key != ConsoleKey.Enter);
             Console.Clear();
+            chosenOption = options[index];
             options[index].Action.Invoke();
         }
 
@@ -101,12 +196,18 @@
                 Console.WriteLine(option.Name, option.Color);
             }
         }
+
+        public void Dispose()
+        {
+            GC.Collect();
+            GC.SuppressFinalize(this);
+        }
     }
 
     /// <summary>
-    /// Initializes a simple Console Menu with an Ascii Title
+    /// Initializes a Console Menu with an Ascii title
     /// </summary>
-    public struct ConsoleMenuAscii
+    public struct ConsoleMenuAscii : IDisposable
     {
         private Color menuColor;
         /// <summary>
@@ -136,14 +237,13 @@
         private Figlet? figlet = null;
 
         /// <summary>
-        /// Initializes a simple Console Menu with an Ascii Title
+        /// Initializes a Console Menu with an Ascii Title
         /// </summary>
-        /// <param name="menuColor"></param>
-        /// <param name="title"></param>
-        /// <param name="titleColor"></param>
-        /// <param name="menuSymbol"></param>
-        /// <param name="fontPath"></param>
-        /// <exception Throws an cref="Exception" if the font path is wrong></exception>
+        /// <param name="menuColor">The color of the menu</param>
+        /// <param name="title">The title of the menu</param>
+        /// <param name="titleColor">The color of the menu title</param>
+        /// <param name="menuSymbol">The menu symbol</param>
+        /// <param name="fontPath">The path of the ascii font</param>
         public ConsoleMenuAscii(Color menuColor, string title, Color titleColor, string menuSymbol = ">", string fontPath = "")
         {
             this.menuColor = menuColor;
@@ -168,8 +268,9 @@
         /// <summary>
         /// Runs the Menu with the given Menu Options
         /// </summary>
-        /// <param name="options"></param>
-        public void Run(MenuOption[] options)
+        /// <param name="options">The options to run the menu with</param>
+        /// <param name="chosenOption">The chosen option</param>
+        public void Run(MenuOption[] options, out MenuOption chosenOption)
         {
             var index = 0;
 
@@ -198,6 +299,7 @@
                 }
             } while (key != ConsoleKey.Enter);
             Console.Clear();
+            chosenOption = options[index];
             options[index].Action.Invoke();
         }
 
@@ -235,6 +337,12 @@
                 Console.WriteLine(option.Name, option.Color);
             }
         }
+
+        public void Dispose()
+        {
+            GC.Collect();
+            GC.SuppressFinalize(this);
+        }
     }
 
     /// <summary>
@@ -258,9 +366,9 @@
         /// <summary>
         /// Creates a new Menu Option
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="color"></param>
-        /// <param name="action"></param>
+        /// <param name="name">The name of the option</param>
+        /// <param name="color">The color of the option</param>
+        /// <param name="action">The action that should be invoked</param>
         public MenuOption(string name, Color color, Action action)
         {
             Name = name;
