@@ -4,19 +4,16 @@ Easy to use and highly customizable Console Menu
 
 ### Documentation
 
-> Create a ConsoleMenu object
+> Run the ConsoleMenu with the options array as parameter and dispose it afterwards
 
-    var menu = new ConsoleMenu(Color.Red, "Title", Color.FromArgb(255, 255, 255), "->"); //Simple Menu
-    var menuAscii = new ConsoleMenuAscii(Color.Red, "Title", Color.FromArgb(255, 255, 255), "->"); //Fancy Menu
-
-> Create an array of the MenuOption object
-
-    var options = new MenuOption[]
-          {
-              new MenuOption("Option 1", Color.Green, () => Main()), //Starts Main() Method when chosen
-              new MenuOption("Option 2", Color.HotPink, () => Console.Beep(25000, 100000)) //Plays Beep Sound when chosen (Beep() Method only on Windows avalable)
-          };
-
-> Run the ConsoleMenu with the options array as parameter
-
-    menu.Run(options);
+```
+MenuOption chosenOption;
+using (var menu = new ConsoleMenu(Color.Red, "MenuTitle", Color.FromArgb(255,22,13), "->"))
+{
+    menu.Run(new MenuOption[]
+    {
+        new MenuOption("Option 1", Color.Green, () => Main()),
+        new MenuOption("Option 2", Color.Yellow, () => Console.CursorVisible = false)
+    }, out chosenOption);
+}
+```
