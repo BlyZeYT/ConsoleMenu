@@ -32,6 +32,17 @@ namespace ConsoleMenu
         }
 
         /// <summary>
+        /// Initializes a Console Menu without a title
+        /// </summary>
+        /// <param name="menuColor">The color of the menu</param>
+        /// <param name="menuSymbol">The symbol of the menu</param>
+        public ConsoleMenuSimple(MenuColor menuColor, string menuSymbol = ">")
+        {
+            this.menuColor = menuColor.Color;
+            this.menuSymbol = menuSymbol;
+        }
+
+        /// <summary>
         /// Runs the Menu with the given Menu Options
         /// </summary>
         /// <param name="options">The options to run the menu with</param>
@@ -135,6 +146,21 @@ namespace ConsoleMenu
             this.menuColor = menuColor;
             this.title = title;
             this.titleColor = titleColor;
+            this.menuSymbol = menuSymbol;
+        }
+
+        /// <summary>
+        /// Initializes a Console Menu with a title
+        /// </summary>
+        /// <param name="menuColor">The color of the menu</param>
+        /// <param name="title">The title of the menu</param>
+        /// <param name="titleColor">The color of the title menu</param>
+        /// <param name="menuSymbol">The symbol of the menu</param>
+        public ConsoleMenu(MenuColor menuColor, string title, MenuColor titleColor, string menuSymbol = ">")
+        {
+            this.menuColor = menuColor.Color;
+            this.title = title;
+            this.titleColor = titleColor.Color;
             this.menuSymbol = menuSymbol;
         }
 
@@ -266,6 +292,35 @@ namespace ConsoleMenu
         }
 
         /// <summary>
+        /// Initializes a Console Menu with an Ascii Title
+        /// </summary>
+        /// <param name="menuColor">The color of the menu</param>
+        /// <param name="title">The title of the menu</param>
+        /// <param name="titleColor">The color of the menu title</param>
+        /// <param name="menuSymbol">The menu symbol</param>
+        /// <param name="fontPath">The path of the ascii font</param>
+        public ConsoleMenuAscii(MenuColor menuColor, string title, MenuColor titleColor, string menuSymbol = ">", string fontPath = "")
+        {
+            this.menuColor = menuColor.Color;
+            this.title = title;
+            this.titleColor = titleColor.Color;
+            this.menuSymbol = menuSymbol;
+
+            if (fontPath != "")
+            {
+                try
+                {
+                    figlet = new Figlet(FigletFont.Load(fontPath));
+                    this.fontPath = fontPath;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message, ex.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
         /// Runs the Menu with the given Menu Options
         /// </summary>
         /// <param name="options">The options to run the menu with</param>
@@ -346,7 +401,7 @@ namespace ConsoleMenu
     }
 
     /// <summary>
-    /// Creates a new Menu Option
+    /// Represents a Menu Option
     /// </summary>
     public class MenuOption
     {
@@ -375,5 +430,119 @@ namespace ConsoleMenu
             Color = color;
             Action = action;
         }
+
+        /// <summary>
+        /// Creates a new Menu Option
+        /// </summary>
+        /// <param name="name">The name of the option</param>
+        /// <param name="color">The color of the option</param>
+        /// <param name="action">The action that should be invoked</param>
+        public MenuOption(string name, MenuColor color, Action action)
+        {
+            Name = name;
+            Color = color.Color;
+            Action = action;
+        }
+    }
+
+    /// <summary>
+    /// Represents a Menu Color
+    /// </summary>
+    public readonly struct MenuColor
+    {
+        private readonly Color color;
+        /// <summary>
+        /// Gets the <see cref="System.Drawing.Color"/> of the <see cref="MenuColor"/>
+        /// </summary>
+        public Color Color { get { return color; } }
+
+        /// <summary>
+        /// Initializes a Menu Color
+        /// </summary>
+        /// <param name="color">The color to create a Menu Color as <see cref="System.Drawing.Color"/></param>
+        public MenuColor(Color color)
+        {
+            this.color = color;
+        }
+
+        /// <summary>
+        /// Initializes a Menu Color
+        /// </summary>
+        /// <param name="hexValue">The color to create a Menu Color as HEX <see cref="string"/></param>
+        /// <exception cref="Exception"></exception>
+        public MenuColor(string HEXValue)
+        {
+            try
+            {
+                color = ColorTranslator.FromHtml(HEXValue);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a Menu Color
+        /// </summary>
+        /// <param name="red">Red value</param>
+        /// <param name="green">Green value</param>
+        /// <param name="blue">Blue value</param>
+        public MenuColor(byte red, byte green, byte blue)
+        {
+            color = Color.FromArgb(red, green, blue);
+        }
+
+        /// <summary>
+        /// Initializes a Menu Color
+        /// </summary>
+        /// <param name="alpha">Alpha value</param>
+        /// <param name="red">Red value</param>
+        /// <param name="green">Green value</param>
+        /// <param name="blue">Blue value</param>
+        public MenuColor(byte alpha, byte red, byte green, byte blue)
+        {
+            color = Color.FromArgb(alpha, red, green, blue);
+        }
+
+        /// <summary>
+        /// Gets the color from a red, green and blue value
+        /// </summary>
+        /// <param name="red">Red value</param>
+        /// <param name="green">Green value</param>
+        /// <param name="blue">Blue value</param>
+        /// <returns>Returns a <see cref="System.Drawing.Color"/> from a red, green and blue value</returns>
+        public static Color FromArgb(byte red, byte green, byte blue) => Color.FromArgb(red, green, blue);
+
+        /// <summary>
+        /// Gets the color from an alpha, red, green and blue value
+        /// </summary>
+        /// <param name="alpha">Alpha value</param>
+        /// <param name="red">Red value</param>
+        /// <param name="green">Green value</param>
+        /// <param name="blue">Blue value</param>
+        /// <returns>Returns a <see cref="System.Drawing.Color"/> from an alpha, red, green and blue value</returns>
+        public static Color FromArgb(byte alpha, byte red, byte green, byte blue) => Color.FromArgb(alpha, red, green, blue);
+
+        /// <summary>
+        /// Gets the color from a HEX value
+        /// </summary>
+        /// <param name="HEXValue">The HEX value as <see cref="string"/></param>
+        /// <returns>Returns a <see cref="System.Drawing.Color"/> from HEX <see cref="string"/></returns>
+        /// <exception cref="Exception"></exception>
+        public static Color FromHEX(string HEXValue)
+        {
+            try
+            {
+                return ColorTranslator.FromHtml(HEXValue);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
+        }
+
+        public static implicit operator Color(MenuColor menuColor) => menuColor.Color;
+        public static explicit operator MenuColor(Color color) => new(color);
     }
 }
