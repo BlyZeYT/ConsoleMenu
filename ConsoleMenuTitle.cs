@@ -8,7 +8,7 @@ using Figgle;
 public sealed record ConsoleMenuTitle
 {
     /// <summary>
-    /// Title text
+    /// Text that will be shown
     /// </summary>
     public string Text { get; set; }
 
